@@ -52,6 +52,35 @@ class UserService {
         await transporter.sendMail(mailOptions);
     }
 
+    static async verifyEmailToken(token) {
+        try {
+            // verify the token
+            const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+            const user = await userModel.findOne({ email: decodedToken.email });
+            if (!user) {
+                return { success: false, message: 'User not found' };
+            }
+            if (user.isVerified) {
+                return { success: false, message: 'User already verified' };
+            }
+
+            // mark the user as verified
+            user.isVerified = true;
+            // delete token after verification
+            user.verificationToken = null;
+            await user.save();
+
+            return { success: true, message: 'User verified successfully' };
+        } catch (error) {
+            if (error.name == 'TokenExpiredError') {
+                return { success: false, message: 'Verification token has expired.' };
+            }
+            return { success: false, message: 'Invalid token.' };
+
+
+        }
+    }
+
     static async findUserByEmail(email) {
         try {
             console.log("Finding user with email: ", email);
