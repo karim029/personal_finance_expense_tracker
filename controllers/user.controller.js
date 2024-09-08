@@ -19,13 +19,30 @@ exports.register = async (req, res, next) => {
 
         // duplicate email error
         if (error.message === 'Email is already registered') {
-            console.log("hi");
             return res.status(400).json({ error: error.message });
         }
 
         next(error);
     }
 };
+
+exports.verifyEmail = async (req, res) => {
+    try {
+        const { token } = req.query;
+        if (!token) {
+            return res.status(400).send('Verification token is required');
+        }
+        const result = await UserService.verifyEmail(token);
+
+        if (result.success) {
+            return res.status(200).send(result.message);
+        } else {
+            return res.status(400).send(result.message);
+        }
+    } catch (error) {
+        next(error);
+    }
+}
 
 exports.logIn = async (req, res, next) => {
     console.log("Request received at /login");
@@ -40,6 +57,9 @@ exports.logIn = async (req, res, next) => {
         const isPassValid = await UserService.verifyPassword(password, existingUser.password);
         if (existingUser && !isPassValid) {
             return res.status(401).json({ error: 'Invalid password or email' });
+        }
+        if (!existingUser.isVerified) {
+            return res.status(403).json({ error: 'Please veify your email first' });
         }
 
         // if success return user data
