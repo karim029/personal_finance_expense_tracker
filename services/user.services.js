@@ -1,6 +1,8 @@
 // import user model
 const userModel = require('../models/user.model');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
 
 class UserService {
     static async registerUser(name, email, password, userId) {
@@ -9,6 +11,17 @@ class UserService {
 
             const createUser = new userModel({ name, email, password, userId });
             const savedUser = await createUser.save();
+
+            // Generate email verification token with expiration
+            const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '1d' });
+
+            // Send verification email
+            await this.sendVerificationEmail(email, token);
+
+            // save the token to the user 
+            savedUser.verificationToken = token;
+            await savedUser.save();
+
             return savedUser;   // saves the model (Collection) in the db
 
         } catch (error) {
@@ -16,6 +29,27 @@ class UserService {
 
             throw error;
         }
+    }
+
+    static async sendVerificationEmail(email, token) {
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS,
+            }
+        });
+
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: 'Verify your Email',
+            html: `<h1>Email Verification</h1>
+                   <p>Click the link to verify your email:</p>
+                   <a href="http://localhost:3000/users/verify-email?token=${token}">Verify Email</a>`
+        };
+
+        await transporter.sendMail(mailOptions);
     }
 
     static async findUserByEmail(email) {
