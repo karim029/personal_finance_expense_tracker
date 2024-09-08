@@ -3,11 +3,11 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:personal_tracker/domain/entities/expenses_data_model.dart';
 
-final url = 'http://localhost:3000/expenses/';
+const url = 'http://localhost:3000/expenses/';
 
-final addExpenseUrl = 'add-expense';
-final userExpensesUrl = 'user-expenses?userId=';
-final deleteExpenseurl = 'remove-expense/';
+const addExpenseUrl = 'add-expense';
+const userExpensesUrl = 'user-expenses?userId=';
+const deleteExpenseurl = 'remove-expense/';
 
 class ExpensesRepository {
   final http.Client _client;
@@ -25,13 +25,11 @@ class ExpensesRepository {
           newExpense.toJson(),
         ),
       );
-      print(response.statusCode);
 
       if (response.statusCode != 201) {
         throw Exception('Failed to add expense: ${response.reasonPhrase}');
       }
     } catch (e) {
-      print('Error adding expense: $e');
       throw Exception('Failed to add expense');
     }
   }
@@ -39,7 +37,7 @@ class ExpensesRepository {
   Future<List<ExpensesDataModel>> fetchUserExpenses(String userId) async {
     try {
       final response =
-          await _client.get(Uri.parse(url + userExpensesUrl + '${userId}'));
+          await _client.get(Uri.parse('$url$userExpensesUrl$userId'));
 
       if (response.statusCode == 200) {
         // the whole body of the response
@@ -53,7 +51,6 @@ class ExpensesRepository {
         throw Exception('Failed to fetch expenses: ${response.reasonPhrase}');
       }
     } catch (e) {
-      print('Error fetching expenses: $e');
       throw Exception('Failed to fetch expenses');
     }
   }
@@ -66,12 +63,10 @@ class ExpensesRepository {
           'Content-Type': 'application/json',
         },
       );
-      print(response.statusCode);
       if (response.statusCode != 200) {
         throw Exception('Failed to remove expense: ${response.reasonPhrase}');
       }
     } catch (e) {
-      print('Error removing expense: $e');
       throw Exception('Failed to remove expense');
     }
   }

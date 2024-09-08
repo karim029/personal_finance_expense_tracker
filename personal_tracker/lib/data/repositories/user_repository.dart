@@ -1,12 +1,14 @@
-import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'package:http/http.dart' as http;
 
 import 'package:personal_tracker/domain/entities/reg_user_model.dart';
 import 'package:personal_tracker/domain/entities/signin_user_model.dart';
 
-final url = 'http://localhost:3000/';
-final registration = url + 'users/registration';
-final logIn = url + 'users/login';
+const url = 'http://localhost:3000/';
+const registration = '${url}users/registration';
+const logIn = '${url}users/login';
+const verification = '${url}users/Check-verification';
 
 class UserRepository {
   final http.Client _client;
@@ -61,6 +63,23 @@ class UserRepository {
       return SignInResponse(
           success: false,
           error: body['error'] ?? 'Login failed... try again later');
+    }
+  }
+
+  Future<bool> checkEmailVerification(String userId) async {
+    final response = await _client.post(Uri.parse(verification), headers: {
+      'Content-Type': 'application/json'
+    }, body: {
+      jsonEncode({
+        'userId': userId,
+      }),
+    });
+
+    if (response.statusCode == 200) {
+      final body = jsonDecode(response.body);
+      return body['verification'];
+    } else {
+      throw Exception('Failed to check email verification');
     }
   }
 }

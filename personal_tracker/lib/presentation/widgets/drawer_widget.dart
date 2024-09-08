@@ -5,6 +5,8 @@ import 'package:personal_tracker/provider/route_provider.dart';
 import 'package:personal_tracker/provider/sign_in_notifier.dart';
 
 class AppDrawer extends ConsumerWidget {
+  const AppDrawer({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final signinState = ref.read(signInNotifierProvider.notifier);
@@ -28,7 +30,7 @@ class AppDrawer extends ConsumerWidget {
             height: 20,
           ),
           ListTile(
-            leading: Icon(Icons.person),
+            leading: const Icon(Icons.person),
             title: Text(
               'Profile',
               style: Theme.of(context).textTheme.labelMedium,
@@ -38,7 +40,7 @@ class AppDrawer extends ConsumerWidget {
             },
           ),
           ListTile(
-            leading: Icon(Icons.settings),
+            leading: const Icon(Icons.settings),
             title: Text(
               'Settings',
               style: Theme.of(context).textTheme.labelMedium,
@@ -49,7 +51,7 @@ class AppDrawer extends ConsumerWidget {
             },
           ),
           ListTile(
-            leading: Icon(Icons.logout),
+            leading: const Icon(Icons.logout),
             title: Text(
               'Logout',
               style: Theme.of(context).textTheme.labelMedium,

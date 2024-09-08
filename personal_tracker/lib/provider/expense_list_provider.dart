@@ -12,7 +12,7 @@ class ExpenseListNotifier extends Notifier<List<ExpensesDataModel>> {
 
   @override
   List<ExpensesDataModel> build() {
-    _expensesRepository = ref.watch(ExpensesRepositoryProvider);
+    _expensesRepository = ref.watch(expensesRepositoryProvider);
     _expenseBox = Hive.box<ExpensesDataModel>('expenses');
 
     fetchUserExpenses();
@@ -54,7 +54,6 @@ class ExpenseListNotifier extends Notifier<List<ExpensesDataModel>> {
   Future<void> fetchUserExpenses() async {
     final signedUserId = ref.watch(signInNotifierProvider).userId ??
         ref.watch(registrationNotifierProvider).userId;
-    print("from expenses provider:  ${signedUserId}");
     if (signedUserId == null) return;
     try {
       // fetch user expenses from the server
