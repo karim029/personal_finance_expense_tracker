@@ -84,6 +84,23 @@ class RegistrationNotifier extends Notifier<RegistrationState> {
           errorMessage: 'An error occurred. Please try again.');
     }
   }
+
+  Future<void> verifyUser() async {
+    try {
+      final response = await _userRepository
+          .checkEmailVerification(RegistrationState.success().userId!);
+
+      if (response) {
+        state = state.copyWith(isVerified: true);
+      } else {
+        state = state.copyWith(errorMessage: 'User not verified... try again');
+      }
+    } catch (e) {
+      state = state.copyWith(
+          isVerified: false,
+          errorMessage: 'An error occurred. Please try again.');
+    }
+  }
 }
 
 class RegistrationState {
@@ -94,6 +111,7 @@ class RegistrationState {
   final bool isLoading;
   final String? errorMessage;
   final bool isRegistered;
+  final bool? isVerified;
   final String? userId;
 
   RegistrationState({
@@ -104,6 +122,7 @@ class RegistrationState {
     required this.isLoading,
     this.errorMessage,
     this.userId,
+    this.isVerified,
     required this.isRegistered,
   });
 
@@ -115,6 +134,7 @@ class RegistrationState {
       confirmPassword: '',
       isLoading: false,
       isRegistered: false,
+      isVerified: false,
       userId: null,
     );
   }
@@ -127,6 +147,7 @@ class RegistrationState {
       confirmPassword: '',
       isLoading: false,
       isRegistered: true,
+      isVerified: false,
       userId: userId,
     );
   }
@@ -138,6 +159,7 @@ class RegistrationState {
     String? confirmPassword,
     bool? isLoading,
     String? errorMessage,
+    bool? isVerified,
     bool? isRegistered,
   }) {
     return RegistrationState(
@@ -148,6 +170,7 @@ class RegistrationState {
       isLoading: isLoading ?? this.isLoading,
       errorMessage: errorMessage ?? this.errorMessage,
       isRegistered: isRegistered ?? this.isRegistered,
+      isVerified: isVerified ?? this.isVerified,
     );
   }
 }

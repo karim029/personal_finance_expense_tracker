@@ -75,12 +75,8 @@ class UserRepository {
       }),
     });
 
-    if (response.statusCode == 200) {
-      final body = jsonDecode(response.body);
-      return body['verification'];
-    } else {
-      throw Exception('Failed to check email verification');
-    }
+    final body = jsonDecode(response.body);
+    return body['verification'];
   }
 }
 
