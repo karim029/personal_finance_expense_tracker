@@ -54,7 +54,7 @@ class UserService {
 
             await this.sendVerificationEmail(user.email, newToken);
 
-            return { success: true, message: 'Verification email resent successfully' };
+            return { success: true, message: 'Verification email sent successfully' };
 
 
         } catch (error) {
