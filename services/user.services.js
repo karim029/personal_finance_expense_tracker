@@ -213,7 +213,7 @@ class UserService {
 
     static async generatePassResetCode(email) {
         try {
-            const user = this.findUserByEmail(email);
+            const user = await this.findUserByEmail(email);
             if (!user) {
                 return { success: false, message: 'User not found' };
             }
@@ -225,7 +225,7 @@ class UserService {
             user.resetCodeExpires = Date.now() + 3600000;
             await user.save();
 
-            await sendResetCodeEmail(email, resetCode);
+            await this.sendResetCodeEmail(email, resetCode);
 
             return { success: true, message: 'Password reset code sent to email' };
 
@@ -312,15 +312,17 @@ class UserService {
 
     static async verifyResetCode(email, resetCode) {
         try {
-            const user = this.findUserByEmail(email);
+            const user = await this.findUserByEmail(email);
             if (!user) {
                 return { success: false, message: 'User not found' };
             }
-            if (user.resetCode !== resetCode || Date.now() > user.resetCodeExpires) {
+            if (user.resetCode != resetCode || Date.now() > user.resetCodeExpires) {
                 return { success: false, message: 'Invalid or expired reset code' };
 
+            } else if (resetCode == user.resetCode) {
+
+                return { success: true, message: 'Reset code is valid' };
             }
-            return { success: true, message: 'Reset code is valid' };
 
         } catch (error) {
             console.error('Error in verifyResetCode:', error);
@@ -335,7 +337,7 @@ class UserService {
                 return { success: false, message: 'User not found' };
             }
 
-            if (user.resetCode !== resetCode || Date.now() > user.resetCodeExpires) {
+            if (user.resetCode != resetCode || Date.now() > user.resetCodeExpires) {
                 return { success: false, message: 'Invalid or expired reset code' };
             }
 
