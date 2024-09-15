@@ -146,4 +146,17 @@ exports.requestResetCode = async (req, res, next) => {
             next(error);
         }
     }
+
+    exports.resetPassword = async (req, res, next) => {
+        const { email, resetCode, newPassword } = req.body;
+        try {
+            const response = await UserService.resetPassword(email, resetCode, newPassword);
+            if (!response.success) {
+                return res.status(400).json({ message: response.message });
+            }
+            res.status(200).json({ message: response.message });
+        } catch (error) {
+            next(error);
+        }
+    }
 }
