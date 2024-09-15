@@ -41,6 +41,11 @@ class PasswordResetScreen extends ConsumerWidget {
                 return SizedBox(
                   width: 50,
                   child: TextField(
+                    onChanged: (value) {
+                      if (value.length == 1) {
+                        FocusScope.of(context).nextFocus();
+                      }
+                    },
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 24),
