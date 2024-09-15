@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:personal_tracker/data/repositories/user_repository.dart';
 import 'package:personal_tracker/domain/entities/reg_user_model.dart';
@@ -5,6 +7,7 @@ import 'package:personal_tracker/provider/user_Repository_provider.dart';
 
 class RegistrationNotifier extends Notifier<RegistrationState> {
   late final UserRepository _userRepository;
+  Timer? _verificationTimer;
 
   @override
   RegistrationState build() {
@@ -87,9 +90,10 @@ class RegistrationNotifier extends Notifier<RegistrationState> {
 
   Future<void> verifyUser() async {
     try {
-      final response = await _userRepository
-          .checkEmailVerification(RegistrationState.success().userId!);
-
+      print('hi');
+      final response =
+          await _userRepository.checkEmailVerification(state.userId!);
+      print('no');
       if (response) {
         state = state.copyWith(isVerified: true);
       } else {

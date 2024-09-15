@@ -5,10 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:personal_tracker/provider/route_provider.dart';
 import 'package:personal_tracker/provider/sign_in_notifier.dart';
 
-/*
-   todo: add ui handler for wrong email and password(user not found, password incorrect)
-   todo: snackbar queue make sure 1 snackbar available before displaying another one 
-  */
 class LogInWidget extends ConsumerWidget {
   const LogInWidget({super.key});
 

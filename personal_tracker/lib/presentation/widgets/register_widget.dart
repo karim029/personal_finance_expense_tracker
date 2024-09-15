@@ -141,7 +141,7 @@ class RegisterWidget extends ConsumerWidget {
                       if (ref.read(registrationNotifierProvider).isRegistered) {
                         ref
                             .read(routeNotifierProvider.notifier)
-                            .goTo(AppRoute.dashboard);
+                            .goTo(AppRoute.verification);
                       } else if (registrationState.errorMessage != null) {
                         // check if snackbar is already visible
 

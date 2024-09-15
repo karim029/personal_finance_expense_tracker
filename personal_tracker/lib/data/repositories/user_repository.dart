@@ -8,7 +8,7 @@ import 'package:personal_tracker/domain/entities/signin_user_model.dart';
 const url = 'http://localhost:3000/';
 const registration = '${url}users/registration';
 const logIn = '${url}users/login';
-const verification = '${url}users/Check-verification';
+const verification = '${url}users/check-verification';
 
 class UserRepository {
   final http.Client _client;
@@ -50,6 +50,7 @@ class UserRepository {
       }),
     );
     final body = jsonDecode(response.body);
+    print(response.statusCode);
     if (response.statusCode == 200) {
       return SignInResponse(
           success: true,
@@ -67,16 +68,18 @@ class UserRepository {
   }
 
   Future<bool> checkEmailVerification(String userId) async {
-    final response = await _client.post(Uri.parse(verification), headers: {
-      'Content-Type': 'application/json'
-    }, body: {
-      jsonEncode({
+    final response = await _client.post(
+      Uri.parse(verification),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
         'userId': userId,
       }),
-    });
+    );
 
-    final body = jsonDecode(response.body);
-    return body['verification'];
+    final body = jsonDecode(response.body) as Map<String, dynamic>;
+    print(body);
+    print(body['isVerified']);
+    return body['isVerified'];
   }
 }
 

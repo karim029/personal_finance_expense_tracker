@@ -6,6 +6,7 @@ import 'package:personal_tracker/presentation/views/loading_screen.dart';
 import 'package:personal_tracker/presentation/views/register_screen.dart';
 import 'package:personal_tracker/presentation/views/settings_screen.dart';
 import 'package:personal_tracker/presentation/views/sign_in_screen.dart';
+import 'package:personal_tracker/presentation/views/verification_screen.dart';
 import 'package:personal_tracker/provider/route_provider.dart';
 
 // configures Gorouter to handle routing based on the current route state managed by the routenotifier class
@@ -23,6 +24,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/register',
         builder: (context, state) => RegisterScreen(),
+      ),
+      GoRoute(
+        path: '/verify',
+        builder: (context, state) => VerificationScreen(),
       ),
       GoRoute(
         path: '/dashboard',
@@ -46,6 +51,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     debugLogDiagnostics: true,
     redirect: (context, state) {
       switch (route) {
+        case AppRoute.verification:
+          return '/verify';
         case AppRoute.dashboard:
           return '/dashboard';
         case AppRoute.addExpense:

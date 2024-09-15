@@ -2,7 +2,15 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-enum AppRoute { dashboard, addExpense, loading, settings, register, logIn }
+enum AppRoute {
+  dashboard,
+  addExpense,
+  loading,
+  settings,
+  register,
+  logIn,
+  verification
+}
 
 class RouteNotifier extends Notifier<AppRoute> {
   // default location
