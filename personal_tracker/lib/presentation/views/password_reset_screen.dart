@@ -21,7 +21,7 @@ class PasswordResetScreen extends ConsumerWidget {
             Icon(
               Icons.lock_reset_rounded,
               size: 150,
-              color: Theme.of(context).colorScheme.secondary,
+              color: Theme.of(context).colorScheme.primary,
             ),
             const SizedBox(height: 20),
 
