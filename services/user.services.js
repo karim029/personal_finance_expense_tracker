@@ -310,6 +310,23 @@ class UserService {
         await transporter.sendMail(mailOptions);
     }
 
+    static async verifyResetCode(email, resetCode) {
+        try {
+            const user = this.findUserByEmail(email);
+            if (!user) {
+                return { success: false, message: 'User not found' };
+            }
+            if (user.resetCode !== resetCode || Date.now() > user.resetCodeExpires) {
+                return { success: false, message: 'Invalid or expired reset code' };
+
+            }
+            return { success: true, message: 'Reset code is valid' };
+
+        } catch (error) {
+            console.error('Error in verifyResetCode:', error);
+            throw error;
+        }
+    }
 
 }
 
