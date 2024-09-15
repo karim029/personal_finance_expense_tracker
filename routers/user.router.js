@@ -25,4 +25,6 @@ router.post('/resend-verification', UserController.resendVerification);
 router.post('/request-reset-code', UserController.requestResetCode);
 
 router.post('/verify-reset-code', UserController.verifyResetCode);
+
+router.post('/reset-password', UserController.resetPassword);
 module.exports = router;
