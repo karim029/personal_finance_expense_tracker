@@ -1,6 +1,7 @@
 // install express.js
 // to import any pacakge we use require
 const express = require('express');
+require('dotenv').config();
 
 // import parser to use and read json
 const body_parser = require('body-parser');

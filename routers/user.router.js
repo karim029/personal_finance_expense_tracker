@@ -14,5 +14,11 @@ router.get('/test', (req, res) => {
 // send the data to the server (API)
 router.post('/registration', UserController.register);
 
+router.post('/check-verification', UserController.checkVerification);
+
 router.post('/login', UserController.logIn);
+
+router.get('/verify-email', UserController.verifyEmail);
+
+router.post('/resend-verification', UserController.resendVerification);
 module.exports = router;
