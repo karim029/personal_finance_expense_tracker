@@ -19,4 +19,6 @@ router.post('/check-verification', UserController.checkVerification);
 router.post('/login', UserController.logIn);
 
 router.get('/verify-email', UserController.verifyEmail);
+
+router.post('/resend-verification', UserController.resendVerification);
 module.exports = router;

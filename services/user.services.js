@@ -35,6 +35,34 @@ class UserService {
         }
     }
 
+    static async resendVerificationEmail(userId) {
+        try {
+
+            const user = await userModel.findOne({ userId });
+            if (!user) {
+                return { success: false, message: 'User not found' };
+            }
+            if (user.isVerified) {
+                return { success: false, message: 'User already verified' };
+            }
+
+            // generate a new token
+            const newToken = jwt.sign({ email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+            user.verificationToken = newToken;
+            await user.save();
+
+            await this.sendVerificationEmail(user.email, newToken);
+
+            return { success: true, message: 'Verification email resent successfully' };
+
+
+        } catch (error) {
+            console.error('Error in resendVerificationEmail:', error);
+            throw error;
+
+        }
+    }
 
     static async sendVerificationEmail(email, token) {
         const transporter = nodemailer.createTransport({
@@ -160,7 +188,6 @@ class UserService {
 
             // check if email exists
             const foundUser = await userModel.findOne({ email });
-            console.log(foundUser);
             return foundUser;
 
         } catch (error) {

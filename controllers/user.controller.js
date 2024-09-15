@@ -28,6 +28,22 @@ exports.register = async (req, res, next) => {
     }
 };
 
+exports.resendVerification = async (req, res, next) => {
+    const { userId } = req.body;
+    try {
+
+        const result = await UserService.resendVerificationEmail(userId);
+        if (!result.success) {
+            return res.status(400).json({ message: result.message });
+        }
+        return res.status(200).json({ message: result.message });
+
+    } catch (error) {
+        return res.status(500).json({ message: 'Server error' });
+
+    }
+}
+
 exports.checkVerification = async (req, res, next) => {
     try {
         const { userId } = req.body;
