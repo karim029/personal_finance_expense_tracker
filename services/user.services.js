@@ -328,6 +328,33 @@ class UserService {
         }
     }
 
+    static async resetPassword(email, resetCode, newPassword) {
+        try {
+            const user = await userModel.findOne({ email });
+            if (!user) {
+                return { success: false, message: 'User not found' };
+            }
+
+            if (user.resetCode !== resetCode || Date.now() > user.resetCodeExpires) {
+                return { success: false, message: 'Invalid or expired reset code' };
+            }
+
+            // Hash the new password
+            const salt = await bcrypt.genSalt(10);
+            const hashedPass = await bcrypt.hash(newPassword, salt);
+
+            user.password = hashedPass;
+            user.resetCode = null;
+            user.resetCodeExpires = null;
+            await user.save();
+
+            return { success: true, message: 'Password has been reset' };
+        } catch (error) {
+            console.error('Error in resetPassword:', error);
+            throw error;
+        }
+    }
+
 }
 
 module.exports = UserService;
