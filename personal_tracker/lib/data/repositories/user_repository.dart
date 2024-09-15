@@ -9,6 +9,7 @@ const url = 'http://localhost:3000/';
 const registration = '${url}users/registration';
 const logIn = '${url}users/login';
 const verification = '${url}users/check-verification';
+const resendVerification = '${url}users/resend-verification';
 
 class UserRepository {
   final http.Client _client;
@@ -77,10 +78,36 @@ class UserRepository {
     );
 
     final body = jsonDecode(response.body) as Map<String, dynamic>;
-    print(body);
-    print(body['isVerified']);
     return body['isVerified'];
   }
+
+  Future<verificationResponse> resendVerificationEmail(String userId) async {
+    final response = await _client.post(
+      Uri.parse(resendVerification),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'userId': userId,
+      }),
+    );
+
+    final body = jsonDecode(response.body);
+    if (response.statusCode == 400) {
+      return verificationResponse(success: false, message: body['message']);
+    }
+    if (response.statusCode == 200) {
+      return verificationResponse(success: true, message: body['message']);
+    }
+    return verificationResponse(
+        success: false,
+        message: 'An error has occured. Please try again later');
+  }
+}
+
+class verificationResponse {
+  final bool success;
+  final String message;
+
+  verificationResponse({required this.success, required this.message});
 }
 
 class SignInResponse {

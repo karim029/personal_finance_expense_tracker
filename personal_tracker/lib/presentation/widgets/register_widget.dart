@@ -142,7 +142,7 @@ class RegisterWidget extends ConsumerWidget {
                         ref
                             .read(routeNotifierProvider.notifier)
                             .goTo(AppRoute.verification);
-                      } else if (registrationState.errorMessage != null) {
+                      } else if (registrationState.message != null) {
                         // check if snackbar is already visible
 
                         // show error message
@@ -150,7 +150,7 @@ class RegisterWidget extends ConsumerWidget {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(
-                              registrationState.errorMessage!,
+                              registrationState.message!,
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyMedium!

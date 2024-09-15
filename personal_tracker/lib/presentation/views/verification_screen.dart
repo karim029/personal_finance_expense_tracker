@@ -10,6 +10,7 @@ class VerificationScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final registrationNotifier =
         ref.read(registrationNotifierProvider.notifier);
+    final registrationState = ref.read(registrationNotifierProvider);
     final routeNotifier = ref.read(routeNotifierProvider.notifier);
 
     // Listening to isVerified state to navigate if true
@@ -52,11 +53,43 @@ class VerificationScreen extends ConsumerWidget {
             const SizedBox(
               height: 20,
             ),
-            ElevatedButton(
-              onPressed: () {
-                registrationNotifier.verifyUser();
-              },
-              child: Text('Already verified?'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    registrationNotifier.verifyUser();
+                  },
+                  child: Text('Already verified ?'),
+                ),
+                SizedBox(
+                  width: 15,
+                ),
+                TextButton(
+                  onPressed: ref
+                          .watch(registrationNotifierProvider)
+                          .canResendEmail
+                      ? () async {
+                          await registrationNotifier.resendVerification();
+                          ScaffoldMessenger.of(context).clearSnackBars();
+                          final message =
+                              ref.watch(registrationNotifierProvider).message;
+                          if (message != null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(message),
+                              ),
+                            );
+                          }
+                        }
+                      : null,
+                  child: Text(ref
+                          .watch(registrationNotifierProvider)
+                          .canResendEmail
+                      ? 'Resend email'
+                      : 'Wait ${ref.watch(registrationNotifierProvider).remainingTime} sec'),
+                ),
+              ],
             ),
           ],
         ),

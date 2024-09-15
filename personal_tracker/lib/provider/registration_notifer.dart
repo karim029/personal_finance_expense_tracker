@@ -7,12 +7,32 @@ import 'package:personal_tracker/provider/user_Repository_provider.dart';
 
 class RegistrationNotifier extends Notifier<RegistrationState> {
   late final UserRepository _userRepository;
-  Timer? _verificationTimer;
+  Timer? _resendButtonTimer;
 
   @override
   RegistrationState build() {
     _userRepository = ref.watch(userRepositoryProvider);
+    ref.onDispose(() {
+      _resendButtonTimer?.cancel();
+    });
     return RegistrationState.initial();
+  }
+
+  void ResendButtonTimerCooldown() {
+    state = state.copyWith(canResendEmail: false, remainingTime: 60);
+
+    _resendButtonTimer = Timer.periodic(
+      Duration(seconds: 1),
+      (timer) {
+        final newRemainingTime = state.remainingTime - 1;
+        if (newRemainingTime <= 0) {
+          timer.cancel();
+          state = state.copyWith(remainingTime: 0, canResendEmail: true);
+        } else {
+          state = state.copyWith(remainingTime: newRemainingTime);
+        }
+      },
+    );
   }
 
   void updateName(String name) {
@@ -36,15 +56,15 @@ class RegistrationNotifier extends Notifier<RegistrationState> {
         state.email.isEmpty ||
         state.password.isEmpty ||
         state.confirmPassword.isEmpty) {
-      state = state.copyWith(errorMessage: 'All fields are required');
+      state = state.copyWith(message: 'All fields are required');
       return false;
     }
     if (!state.email.contains('@')) {
-      state = state.copyWith(errorMessage: 'Invalid email');
+      state = state.copyWith(message: 'Invalid email');
       return false;
     }
     if (state.password != state.confirmPassword) {
-      state = state.copyWith(errorMessage: 'Passwords do not match');
+      state = state.copyWith(message: 'Passwords do not match');
       return false;
     }
     return true;
@@ -60,7 +80,7 @@ class RegistrationNotifier extends Notifier<RegistrationState> {
     }
     state = state.copyWith(
       isLoading: true,
-      errorMessage: null,
+      message: null,
     );
 
     final user = RegUserModel(
@@ -79,30 +99,46 @@ class RegistrationNotifier extends Notifier<RegistrationState> {
           errorMsg =
               'This email is already in use. Please use a different email.';
         }
-        state = state.copyWith(isLoading: false, errorMessage: errorMsg);
+        state = state.copyWith(isLoading: false, message: errorMsg);
       }
     } catch (e) {
       state = state.copyWith(
-          isLoading: false,
-          errorMessage: 'An error occurred. Please try again.');
+          isLoading: false, message: 'An error occurred. Please try again.');
     }
   }
 
   Future<void> verifyUser() async {
     try {
-      print('hi');
       final response =
           await _userRepository.checkEmailVerification(state.userId!);
-      print('no');
       if (response) {
         state = state.copyWith(isVerified: true);
       } else {
-        state = state.copyWith(errorMessage: 'User not verified... try again');
+        state = state.copyWith(message: 'User not verified... try again');
       }
     } catch (e) {
       state = state.copyWith(
-          isVerified: false,
-          errorMessage: 'An error occurred. Please try again.');
+          isVerified: false, message: 'An error occurred. Please try again.');
+    }
+  }
+
+  Future<void> resendVerification() async {
+    if (!state.canResendEmail) return;
+
+    state = state.copyWith(message: null);
+    ResendButtonTimerCooldown();
+    try {
+      final response =
+          await _userRepository.resendVerificationEmail(state.userId!);
+      if (response.success) {
+        state = state.copyWith(message: response.message);
+      } else {
+        state = state.copyWith(message: response.message);
+      }
+    } catch (e) {
+      print('Error: $e');
+
+      state = state.copyWith(message: 'An error occurred. Please try again.');
     }
   }
 }
@@ -113,10 +149,12 @@ class RegistrationState {
   final String password;
   final String confirmPassword;
   final bool isLoading;
-  final String? errorMessage;
+  final String? message;
   final bool isRegistered;
   final bool? isVerified;
   final String? userId;
+  final bool canResendEmail;
+  final int remainingTime;
 
   RegistrationState({
     required this.name,
@@ -124,10 +162,12 @@ class RegistrationState {
     required this.password,
     required this.confirmPassword,
     required this.isLoading,
-    this.errorMessage,
+    required this.isRegistered,
+    required this.canResendEmail,
+    required this.remainingTime,
+    this.message,
     this.userId,
     this.isVerified,
-    required this.isRegistered,
   });
 
   factory RegistrationState.initial() {
@@ -140,6 +180,8 @@ class RegistrationState {
       isRegistered: false,
       isVerified: false,
       userId: null,
+      canResendEmail: true,
+      remainingTime: 0,
     );
   }
 
@@ -153,6 +195,8 @@ class RegistrationState {
       isRegistered: true,
       isVerified: false,
       userId: userId,
+      canResendEmail: true,
+      remainingTime: 0,
     );
   }
 
@@ -162,9 +206,12 @@ class RegistrationState {
     String? password,
     String? confirmPassword,
     bool? isLoading,
-    String? errorMessage,
+    String? message,
     bool? isVerified,
     bool? isRegistered,
+    String? userId,
+    bool? canResendEmail,
+    int? remainingTime,
   }) {
     return RegistrationState(
       name: name ?? this.name,
@@ -172,9 +219,12 @@ class RegistrationState {
       password: password ?? this.password,
       confirmPassword: confirmPassword ?? this.confirmPassword,
       isLoading: isLoading ?? this.isLoading,
-      errorMessage: errorMessage ?? this.errorMessage,
+      message: message ?? this.message,
       isRegistered: isRegistered ?? this.isRegistered,
       isVerified: isVerified ?? this.isVerified,
+      userId: userId ?? this.userId,
+      canResendEmail: canResendEmail ?? this.canResendEmail,
+      remainingTime: remainingTime ?? this.remainingTime,
     );
   }
 }
