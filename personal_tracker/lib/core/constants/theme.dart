@@ -4,16 +4,16 @@ import 'package:google_fonts/google_fonts.dart';
 /// Defines the application's theme data.
 final ThemeData lightAppTheme = ThemeData(
   colorScheme: ColorScheme.fromSeed(
-    seedColor: Color.fromARGB(255, 237, 237, 237),
+    seedColor: const Color.fromARGB(255, 237, 237, 237),
     brightness: Brightness.light,
   ),
   inputDecorationTheme: InputDecorationTheme(
     // Style for the prefix (e.g., $ sign) and suffix (e.g., USD) in input fields
-    prefixStyle: TextStyle(
+    prefixStyle: const TextStyle(
       color: Colors.black,
       fontWeight: FontWeight.bold,
     ),
-    suffixStyle: TextStyle(
+    suffixStyle: const TextStyle(
       color: Colors.black,
       fontWeight: FontWeight.bold,
     ),
@@ -27,14 +27,14 @@ final ThemeData lightAppTheme = ThemeData(
       fontWeight: FontWeight.w200,
     ),
     // Styling for borders of input fields
-    focusedBorder: UnderlineInputBorder(
+    focusedBorder: const UnderlineInputBorder(
       borderSide: BorderSide(
         style: BorderStyle.solid,
         width: 2,
         color: Colors.black,
       ),
     ),
-    border: UnderlineInputBorder(
+    border: const UnderlineInputBorder(
       borderSide: BorderSide(
         style: BorderStyle.solid,
         width: 2,
@@ -44,16 +44,16 @@ final ThemeData lightAppTheme = ThemeData(
     contentPadding: EdgeInsets.zero,
   ),
   textTheme: GoogleFonts.poppinsTextTheme().copyWith(
-    bodyMedium: TextStyle().copyWith(
+    bodyMedium: const TextStyle().copyWith(
       fontWeight: FontWeight.bold,
       fontSize: 16,
     ),
-    labelMedium: TextStyle().copyWith(
+    labelMedium: const TextStyle().copyWith(
       color: Colors.black,
       fontSize: 18,
       fontWeight: FontWeight.w400,
     ),
-    labelLarge: TextStyle().copyWith(
+    labelLarge: const TextStyle().copyWith(
       fontWeight: FontWeight.bold,
       fontSize: 34,
     ),
@@ -65,7 +65,7 @@ final ThemeData lightAppTheme = ThemeData(
       fontWeight: FontWeight.w400,
     ),
     tileColor: Colors.grey[200],
-    contentPadding: EdgeInsets.all(6.0),
+    contentPadding: const EdgeInsets.all(6.0),
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(22.0),
     ),
@@ -88,7 +88,7 @@ final ThemeData lightAppTheme = ThemeData(
     backgroundColor: Colors.white,
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
-    style: ButtonStyle().copyWith(
+    style: const ButtonStyle().copyWith(
       textStyle: WidgetStatePropertyAll(
         GoogleFonts.poppins().copyWith(
           fontWeight: FontWeight.bold,
@@ -97,7 +97,7 @@ final ThemeData lightAppTheme = ThemeData(
     ),
   ),
   textButtonTheme: TextButtonThemeData(
-    style: ButtonStyle().copyWith(
+    style: const ButtonStyle().copyWith(
       textStyle: WidgetStatePropertyAll(
         GoogleFonts.poppins().copyWith(
           fontWeight: FontWeight.bold,
@@ -109,33 +109,33 @@ final ThemeData lightAppTheme = ThemeData(
 
 final ThemeData darkAppTheme = ThemeData(
   colorScheme: ColorScheme.fromSeed(
-    seedColor: Color(0xFF1E1E1E),
+    seedColor: const Color(0xFF1E1E1E),
     brightness: Brightness.dark,
   ),
   inputDecorationTheme: InputDecorationTheme(
-    prefixStyle: TextStyle(
+    prefixStyle: const TextStyle(
       color: Color(0xFFB3B3B3),
       fontWeight: FontWeight.bold,
     ),
-    suffixStyle: TextStyle(
+    suffixStyle: const TextStyle(
       color: Color(0xFFB3B3B3),
       fontWeight: FontWeight.bold,
     ),
     labelStyle: GoogleFonts.poppins(
-      color: Color(0xFFB3B3B3),
+      color: const Color(0xFFB3B3B3),
       fontWeight: FontWeight.bold,
     ),
     hintStyle: GoogleFonts.poppins(
-      color: Color(0xFF6C6C6C),
+      color: const Color(0xFF6C6C6C),
       fontWeight: FontWeight.w200,
     ),
-    focusedBorder: UnderlineInputBorder(
+    focusedBorder: const UnderlineInputBorder(
       borderSide: BorderSide(
         style: BorderStyle.solid,
         width: 2,
       ),
     ),
-    border: UnderlineInputBorder(
+    border: const UnderlineInputBorder(
       borderSide: BorderSide(
         style: BorderStyle.solid,
         width: 2,
@@ -145,22 +145,22 @@ final ThemeData darkAppTheme = ThemeData(
     contentPadding: EdgeInsets.zero,
   ),
   textTheme: GoogleFonts.poppinsTextTheme().copyWith(
-    bodyLarge: TextStyle(
+    bodyLarge: const TextStyle(
       fontWeight: FontWeight.bold,
       fontSize: 18,
       color: Colors.white,
     ),
-    bodyMedium: TextStyle(
+    bodyMedium: const TextStyle(
       fontWeight: FontWeight.bold,
       fontSize: 16,
       color: Colors.white,
     ),
-    labelMedium: TextStyle(
+    labelMedium: const TextStyle(
       color: Color(0xFFB3B3B3),
       fontSize: 18,
       fontWeight: FontWeight.w400,
     ),
-    labelLarge: TextStyle(
+    labelLarge: const TextStyle(
       fontWeight: FontWeight.bold,
       fontSize: 34,
       color: Colors.white,
@@ -169,11 +169,11 @@ final ThemeData darkAppTheme = ThemeData(
   listTileTheme: ListTileThemeData(
     subtitleTextStyle: GoogleFonts.poppins().copyWith(
       fontSize: 16,
-      color: Color(0xFFB3B3B3),
+      color: const Color(0xFFB3B3B3),
       fontWeight: FontWeight.w400,
     ),
-    tileColor: Color(0xFF333333),
-    contentPadding: EdgeInsets.all(6.0),
+    tileColor: const Color(0xFF333333),
+    contentPadding: const EdgeInsets.all(6.0),
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(22.0),
     ),
@@ -181,22 +181,22 @@ final ThemeData darkAppTheme = ThemeData(
   cardTheme: CardTheme(
     elevation: 0,
     shadowColor: Colors.black,
-    color: Color(0xFF424242),
+    color: const Color(0xFF424242),
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(22.0),
     ),
   ),
-  scaffoldBackgroundColor: Color(0xFF121212),
+  scaffoldBackgroundColor: const Color(0xFF121212),
   appBarTheme: AppBarTheme(
     titleTextStyle: GoogleFonts.poppins(
       fontSize: 24,
       color: Colors.white,
       fontWeight: FontWeight.bold,
     ),
-    backgroundColor: Color(0xFF1E1E1E),
+    backgroundColor: const Color(0xFF1E1E1E),
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
-    style: ButtonStyle().copyWith(
+    style: const ButtonStyle().copyWith(
       textStyle: WidgetStatePropertyAll(
         GoogleFonts.poppins().copyWith(
           fontWeight: FontWeight.bold,
@@ -206,7 +206,7 @@ final ThemeData darkAppTheme = ThemeData(
     ),
   ),
   textButtonTheme: TextButtonThemeData(
-    style: ButtonStyle().copyWith(
+    style: const ButtonStyle().copyWith(
       textStyle: WidgetStatePropertyAll(
         GoogleFonts.poppins().copyWith(
           fontWeight: FontWeight.bold,
@@ -216,9 +216,9 @@ final ThemeData darkAppTheme = ThemeData(
     ),
   ),
   drawerTheme: DrawerThemeData(
-    backgroundColor: Color(0xFF1E1E1E),
+    backgroundColor: const Color(0xFF1E1E1E),
     scrimColor: Colors.black.withOpacity(0.5),
-    shape: RoundedRectangleBorder(
+    shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.only(
         topRight: Radius.circular(30),
         bottomRight: Radius.circular(30),

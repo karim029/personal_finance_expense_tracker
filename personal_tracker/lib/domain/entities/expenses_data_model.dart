@@ -31,7 +31,7 @@ class ExpensesDataModel extends HiveObject {
     required this.expenseType,
     required this.expenseDescription,
     this.expenseDate,
-  }) : id = Uuid().v4();
+  }) : id = const Uuid().v4();
 
   /// Creates a copy of the current [ExpensesDataModel] with optional updates.
   ExpensesDataModel copyWith({
@@ -84,6 +84,7 @@ class ExpensesDataModel extends HiveObject {
 }
 
 @HiveType(typeId: 1)
+// ignore: camel_case_types
 enum expenses {
   @HiveField(0)
   food,
@@ -105,11 +106,12 @@ enum expenses {
 }
 
 /// Maps expense types to icons.
-final Map<expenses, Icon> expenseIcons = {
-  expenses.food: Icon(Icons.fastfood, color: Colors.white),
-  expenses.drinks: Icon(Icons.local_drink, color: Colors.white),
-  expenses.rent: Icon(Icons.home, color: Colors.white),
-  expenses.subscription: Icon(Icons.subscriptions, color: Colors.white),
-  expenses.clothes: Icon(Icons.shopping_bag, color: Colors.white),
-  expenses.transportation: Icon(Icons.directions_car, color: Colors.white),
+final Map<expenses, Icon> expenseIcons = <expenses, Icon>{
+  expenses.food: const Icon(Icons.fastfood, color: Colors.white),
+  expenses.drinks: const Icon(Icons.local_drink, color: Colors.white),
+  expenses.rent: const Icon(Icons.home, color: Colors.white),
+  expenses.subscription: const Icon(Icons.subscriptions, color: Colors.white),
+  expenses.clothes: const Icon(Icons.shopping_bag, color: Colors.white),
+  expenses.transportation:
+      const Icon(Icons.directions_car, color: Colors.white),
 };

@@ -52,7 +52,7 @@ class SignInNotifier extends Notifier<SignInState> {
 
     try {
       final response = await _userRepository.signInUser(user);
-
+      print(response.success);
       if (response.success) {
         // take the userid from the response body
         state = SignInState.success(

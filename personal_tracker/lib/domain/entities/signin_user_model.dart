@@ -1,6 +1,6 @@
 class SignInUserModel {
-  final signInUserEmail;
-  final signInPass;
+  String signInUserEmail;
+  String signInPass;
   String? userId;
   String? name;
 

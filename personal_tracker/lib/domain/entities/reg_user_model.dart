@@ -1,6 +1,6 @@
 import 'package:uuid/uuid.dart';
 
-final uid = Uuid();
+const uid = Uuid();
 
 class RegUserModel {
   final String userId;

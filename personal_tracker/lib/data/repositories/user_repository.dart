@@ -1,12 +1,15 @@
-import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'package:http/http.dart' as http;
 
 import 'package:personal_tracker/domain/entities/reg_user_model.dart';
 import 'package:personal_tracker/domain/entities/signin_user_model.dart';
 
-final url = 'http://localhost:3000/';
-final registration = url + 'users/registration';
-final logIn = url + 'users/login';
+const url = 'http://localhost:3000/';
+const registration = '${url}users/registration';
+const logIn = '${url}users/login';
+const verification = '${url}users/check-verification';
+const resendVerification = '${url}users/resend-verification';
 
 class UserRepository {
   final http.Client _client;
@@ -48,6 +51,7 @@ class UserRepository {
       }),
     );
     final body = jsonDecode(response.body);
+    print(response.statusCode);
     if (response.statusCode == 200) {
       return SignInResponse(
           success: true,
@@ -63,6 +67,47 @@ class UserRepository {
           error: body['error'] ?? 'Login failed... try again later');
     }
   }
+
+  Future<bool> checkEmailVerification(String userId) async {
+    final response = await _client.post(
+      Uri.parse(verification),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'userId': userId,
+      }),
+    );
+
+    final body = jsonDecode(response.body) as Map<String, dynamic>;
+    return body['isVerified'];
+  }
+
+  Future<verificationResponse> resendVerificationEmail(String userId) async {
+    final response = await _client.post(
+      Uri.parse(resendVerification),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'userId': userId,
+      }),
+    );
+
+    final body = jsonDecode(response.body);
+    if (response.statusCode == 400) {
+      return verificationResponse(success: false, message: body['message']);
+    }
+    if (response.statusCode == 200) {
+      return verificationResponse(success: true, message: body['message']);
+    }
+    return verificationResponse(
+        success: false,
+        message: 'An error has occured. Please try again later');
+  }
+}
+
+class verificationResponse {
+  final bool success;
+  final String message;
+
+  verificationResponse({required this.success, required this.message});
 }
 
 class SignInResponse {

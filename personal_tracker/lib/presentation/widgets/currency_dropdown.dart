@@ -10,22 +10,21 @@ class CurrencyDropdown extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedCurrency = ref.watch(currencyNotifierProvider);
-    print(selectedCurrency);
     return DropdownButtonFormField2<CurrencyModel>(
-      menuItemStyleData: MenuItemStyleData(
+      menuItemStyleData: const MenuItemStyleData(
           overlayColor: WidgetStatePropertyAll(
         Colors.white,
       )),
       items: currencyMap.values.map(
         (CurrencyModel currency) {
           return DropdownMenuItem<CurrencyModel>(
+            value: currency,
             child: Text(
               currency.abbreviation,
               style: TextStyle(
                 color: Theme.of(context).colorScheme.secondary,
               ),
             ),
-            value: currency,
           );
         },
       ).toList(),
