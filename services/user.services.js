@@ -3,6 +3,7 @@ const userModel = require('../models/user.model');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
+const crypto = require('crypto');
 
 class UserService {
     static async registerUser(name, email, password, userId) {
@@ -188,7 +189,11 @@ class UserService {
 
             // check if email exists
             const foundUser = await userModel.findOne({ email });
-            return foundUser;
+            if (foundUser != null) {
+
+                return foundUser;
+            }
+            return null;
 
         } catch (error) {
             console.error("Error in UserService.findUserByEmail:", error);
@@ -205,6 +210,106 @@ class UserService {
             throw error;
         }
     }
+
+    static async generatePassResetCode(email) {
+        try {
+            const user = this.findUserByEmail(email);
+            if (!user) {
+                return { success: false, message: 'User not found' };
+            }
+
+            // generate a 4 digit code
+            const resetCode = crypto.randomInt(1000, 9999).toString();
+
+            user.resetCode = resetCode;
+            user.resetCodeExpires = Date.now() + 3600000;
+            await user.save();
+
+            await sendResetCodeEmail(email, resetCode);
+
+            return { success: true, message: 'Password reset code sent to email' };
+
+        } catch (error) {
+
+            console.error('Error in generateResetCode:', error);
+            throw error;
+        }
+    }
+
+    static async sendResetCodeEmail(email, resetCode) {
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS,
+            }
+        });
+
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: 'Password Reset Code',
+            html: `
+        <html>
+        <head>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    background-color: #f4f4f4;
+                    margin: 0;
+                    padding: 0;
+                }
+                .container {
+                    max-width: 600px;
+                    margin: 20px auto;
+                    background-color: #ffffff;
+                    padding: 20px;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                }
+                h1 {
+                    color: #333333;
+                    text-align: center;
+                }
+                p {
+                    color: #555555;
+                    font-size: 16px;
+                    line-height: 1.5;
+                }
+                .code {
+                    display: block;
+                    padding: 10px;
+                    font-size: 24px;
+                    color: #ffffff;
+                    background-color: #007bff;
+                    text-align: center;
+                    border-radius: 4px;
+                    margin: 20px 0;
+                }
+                .footer {
+                    text-align: center;
+                    font-size: 14px;
+                    color: #999999;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>Password Reset</h1>
+                <p>Hi there,</p>
+                <p>We received a request to reset your password. Use the code below to reset your password:</p>
+                <div class="code">${resetCode}</div>
+                <p>If you didn't request a password reset, please ignore this email.</p>
+                <p class="footer">Best regards,<br>RKY Co</p>
+            </div>
+        </body>
+        </html>
+    `
+        };
+
+        await transporter.sendMail(mailOptions);
+    }
+
 
 }
 
