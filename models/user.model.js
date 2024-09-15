@@ -48,14 +48,15 @@ const userSchema = new Schema({
 userSchema.pre('save', async function () {
     try {
         var user = this;
-        const salt = await (bcrypt.genSalt(10));
-        const hashedPass = await bcrypt.hash(user.password, salt);
-
-        user.password = hashedPass;
+        if (user.isModified('password') || user.isNew) {
+            const salt = await bcrypt.genSalt(10);
+            const hashedPass = await bcrypt.hash(user.password, salt);
+            user.password = hashedPass;
+        }
     } catch (error) {
         throw error;
     }
-})
+});
 
 // create the user model
 const userModel = db.model('user', userSchema);

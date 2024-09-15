@@ -11,7 +11,9 @@ exports.register = async (req, res, next) => {
 
         // send them to the userservice function 
         const successRes = await UserService.registerUser(name, email, password, userId);
-
+        if (!successRes.success) {
+            res.status(403).json({ success: successRes.message });
+        }
         // send an acknowledge ar Nak
         res.status(201).json({ success: "User Registered Successfully" });
 
@@ -26,13 +28,36 @@ exports.register = async (req, res, next) => {
     }
 };
 
-exports.verifyEmail = async (req, res) => {
+exports.checkVerification = async (req, res, next) => {
+    try {
+        const { userId } = req.body;
+        console.log("Checking verification status for userId:", userId); // Debugging log
+
+
+        const verificationStatus = await UserService.isUserVerified(userId);
+        if (verificationStatus) {
+            console.log(verificationStatus);
+
+            return res.status(200).json({ isVerified: true });
+        } else {
+            console.log(verificationStatus);
+
+            return res.status(400).json({ isVerified: false });
+
+        }
+    } catch (error) {
+        next(error);
+
+    }
+}
+
+exports.verifyEmail = async (req, res, next) => {
     try {
         const { token } = req.query;
         if (!token) {
             return res.status(400).send('Verification token is required');
         }
-        const result = await UserService.verifyEmail(token);
+        const result = await UserService.verifyEmailToken(token);
 
         if (result.success) {
             return res.status(200).send(result.message);
@@ -55,7 +80,8 @@ exports.logIn = async (req, res, next) => {
         }
 
         const isPassValid = await UserService.verifyPassword(password, existingUser.password);
-        if (existingUser && !isPassValid) {
+        console.log(isPassValid);
+        if (!isPassValid) {
             return res.status(401).json({ error: 'Invalid password or email' });
         }
         if (!existingUser.isVerified) {
