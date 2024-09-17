@@ -148,9 +148,9 @@ exports.verifyResetCode = async (req, res, next) => {
 }
 
 exports.resetPassword = async (req, res, next) => {
-    const { email, resetCode, newPassword } = req.body;
+    const { email, newPassword } = req.body;
     try {
-        const response = await UserService.resetPassword(email, resetCode, newPassword);
+        const response = await UserService.resetPassword(email, newPassword);
         if (!response.success) {
             return res.status(400).json({ message: response.message });
         }

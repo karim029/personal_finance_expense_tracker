@@ -227,7 +227,7 @@ class UserService {
 
             await this.sendResetCodeEmail(email, resetCode);
 
-            return { success: true, message: 'Password reset code sent to email' };
+            return { success: true, message: 'Verification code sent' };
 
         } catch (error) {
 
@@ -330,16 +330,13 @@ class UserService {
         }
     }
 
-    static async resetPassword(email, resetCode, newPassword) {
+    static async resetPassword(email, newPassword) {
         try {
             const user = await userModel.findOne({ email });
             if (!user) {
                 return { success: false, message: 'User not found' };
             }
 
-            if (user.resetCode != resetCode || Date.now() > user.resetCodeExpires) {
-                return { success: false, message: 'Invalid or expired reset code' };
-            }
 
             // Hash the new password
             const salt = await bcrypt.genSalt(10);
