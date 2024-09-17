@@ -118,6 +118,8 @@ class SignInNotifier extends Notifier<SignInState> {
       return false;
     }
   }
+
+  changePassword(String newPassword) {}
 }
 
 class SignInState {
