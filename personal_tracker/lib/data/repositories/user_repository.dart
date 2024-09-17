@@ -6,11 +6,12 @@ import 'package:personal_tracker/domain/entities/reg_user_model.dart';
 import 'package:personal_tracker/domain/entities/signin_user_model.dart';
 
 const url = 'http://localhost:3000/';
-const registration = '${url}users/registration';
-const logIn = '${url}users/login';
-const verification = '${url}users/check-verification';
-const resendVerification = '${url}users/resend-verification';
-const requestResetCode = '${url}users/request-reset-code';
+const registrationUrl = '${url}users/registration';
+const logInUrl = '${url}users/login';
+const verificationUrl = '${url}users/check-verification';
+const resendVerificationUrl = '${url}users/resend-verification';
+const requestResetCodeUrl = '${url}users/request-reset-code';
+const verifyResetCodeUrl = '${url}users/verify-reset-code';
 
 class UserRepository {
   final http.Client _client;
@@ -21,7 +22,7 @@ class UserRepository {
   // method for registration
   Future<RegistrationResponse> registerUser(RegUserModel user) async {
     final response = await _client.post(
-      Uri.parse(registration),
+      Uri.parse(registrationUrl),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'name': user.name,
@@ -44,7 +45,7 @@ class UserRepository {
   // method for signing in
   Future<SignInResponse> signInUser(SignInUserModel signedUser) async {
     final response = await _client.post(
-      Uri.parse(logIn),
+      Uri.parse(logInUrl),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'email': signedUser.signInUserEmail,
@@ -71,7 +72,7 @@ class UserRepository {
 
   Future<bool> checkEmailVerification(String userId) async {
     final response = await _client.post(
-      Uri.parse(verification),
+      Uri.parse(verificationUrl),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'userId': userId,
@@ -84,7 +85,7 @@ class UserRepository {
 
   Future<verificationResponse> resendVerificationEmail(String userId) async {
     final response = await _client.post(
-      Uri.parse(resendVerification),
+      Uri.parse(resendVerificationUrl),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'userId': userId,
@@ -105,13 +106,32 @@ class UserRepository {
 
   Future<verificationResponse> requestPassResetCode(String email) async {
     final response = await _client.post(
-      Uri.parse(requestResetCode),
+      Uri.parse(requestResetCodeUrl),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'email': email,
       }),
     );
     final body = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      return verificationResponse(success: true, message: body['message']);
+    } else {
+      return verificationResponse(success: false, message: body['message']);
+    }
+  }
+
+  Future<verificationResponse> verifyResetCode(
+      String email, String resetCode) async {
+    final response = await _client.post(
+      Uri.parse(verifyResetCodeUrl),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'email': email,
+        'resetCode': resetCode,
+      }),
+    );
+    final body = jsonDecode(response.body);
+
     if (response.statusCode == 200) {
       return verificationResponse(success: true, message: body['message']);
     } else {

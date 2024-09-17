@@ -71,13 +71,15 @@ class PasswordCodeScreen extends ConsumerWidget {
             SizedBox(
               width: 100,
               child: ElevatedButton(
+                //! add functionality for verifying the code entered by the user.
+
                 onPressed: () {
-                  // TODO: Add verification logic here
                   String verificationCode = controllers.map(
                     (controller) {
                       return controller.text;
                     },
                   ).join('');
+
                   print('Verification Code: $verificationCode');
                 },
                 child: const Text('Verify'),
