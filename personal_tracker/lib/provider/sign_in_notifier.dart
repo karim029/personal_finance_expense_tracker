@@ -92,6 +92,32 @@ class SignInNotifier extends Notifier<SignInState> {
       throw e;
     }
   }
+
+  Future<bool> verifyResetCode(String email, String resetCode) async {
+    try {
+      final response = await _userRepository.verifyResetCode(email, resetCode);
+      if (response.success) {
+        state = state.copyWith(
+          isLoading: false,
+          errorMessage: null,
+          verificationCode: resetCode,
+        );
+        return true;
+      } else {
+        state = state.copyWith(
+          isLoading: false,
+          errorMessage: response.message,
+        );
+        return false;
+      }
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: 'An error occurred while verifying the reset code.',
+      );
+      return false;
+    }
+  }
 }
 
 class SignInState {
