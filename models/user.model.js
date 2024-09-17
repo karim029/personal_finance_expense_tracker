@@ -42,7 +42,15 @@ const userSchema = new Schema({
         type: Boolean,
         default: false,
     },
-    verificationToken: { type: String },
+    verificationToken: {
+        type: String
+    },
+    resetCode: {
+        type: String,
+    },
+    resetCodeExpires: {
+        type: Date
+    }
 });
 
 userSchema.pre('save', async function () {
