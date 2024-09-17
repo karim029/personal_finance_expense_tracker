@@ -23,6 +23,10 @@ class SignInNotifier extends Notifier<SignInState> {
     state = state.copyWith(password: password);
   }
 
+  void updateVerificationCode(String code) {
+    state = state.copyWith(verificationCode: code);
+  }
+
   bool validateFields() {
     if (state.email.isEmpty || state.password.isEmpty) {
       state = state.copyWith(errorMessage: 'All fields are required');
@@ -52,7 +56,6 @@ class SignInNotifier extends Notifier<SignInState> {
 
     try {
       final response = await _userRepository.signInUser(user);
-      print(response.success);
       if (response.success) {
         // take the userid from the response body
         state = SignInState.success(
@@ -70,6 +73,77 @@ class SignInNotifier extends Notifier<SignInState> {
           errorMessage: 'An error occurred. Please try again.');
     }
   }
+
+  Future<bool> requestCode(String email) async {
+    try {
+      final response = await _userRepository.requestPassResetCode(email);
+      if (response.success) {
+        state.copyWith(
+          errorMessage: response.message,
+        );
+        return true;
+      } else {
+        state = state.copyWith(
+          errorMessage: 'Email doesn\'t exist',
+        );
+        return false;
+      }
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  Future<bool> verifyResetCode(String email, String resetCode) async {
+    try {
+      final response = await _userRepository.verifyResetCode(email, resetCode);
+      if (response.success) {
+        state = state.copyWith(
+          isLoading: false,
+          errorMessage: null,
+          verificationCode: resetCode,
+        );
+        return true;
+      } else {
+        state = state.copyWith(
+          isLoading: false,
+          errorMessage: response.message,
+        );
+        return false;
+      }
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: 'An error occurred while verifying the reset code.',
+      );
+      return false;
+    }
+  }
+
+  Future<bool> changePassword(String newPassword) async {
+    try {
+      final response =
+          await _userRepository.resetPassword(state.email, newPassword);
+      if (response.success) {
+        state = state.copyWith(
+          isLoading: false,
+          errorMessage: null,
+        );
+        return true;
+      } else {
+        state = state.copyWith(
+          isLoading: false,
+          errorMessage: response.message,
+        );
+        return false;
+      }
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: 'An error occurred while resetting the password.',
+      );
+      return false;
+    }
+  }
 }
 
 class SignInState {
@@ -80,13 +154,15 @@ class SignInState {
   final bool isSignedIn;
   final String? name;
   String? userId;
+  String? verificationCode;
 
   SignInState(
       {required this.email,
       required this.password,
       required this.isLoading,
-      this.errorMessage,
       required this.isSignedIn,
+      this.verificationCode,
+      this.errorMessage,
       this.name,
       this.userId});
 
@@ -113,12 +189,14 @@ class SignInState {
   SignInState copyWith(
       {String? email,
       String? password,
+      String? verificationCode,
       String? name,
       bool? isLoading,
       bool? isSignedIn,
       String? errorMessage,
       String? userId}) {
     return SignInState(
+        verificationCode: verificationCode ?? this.verificationCode,
         name: name ?? this.name,
         email: email ?? this.email,
         password: password ?? this.password,

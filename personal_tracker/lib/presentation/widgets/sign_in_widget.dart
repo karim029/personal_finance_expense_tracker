@@ -133,7 +133,11 @@ class LogInWidget extends ConsumerWidget {
               height: 20,
             ),
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                ref
+                    .read(routeNotifierProvider.notifier)
+                    .goTo(AppRoute.passwordReset);
+              },
               child: Text(
                 'Forgot password?',
                 style: Theme.of(context).textTheme.bodySmall!.copyWith(

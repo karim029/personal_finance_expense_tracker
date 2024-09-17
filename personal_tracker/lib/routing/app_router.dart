@@ -3,6 +3,9 @@ import 'package:go_router/go_router.dart';
 import 'package:personal_tracker/presentation/views/expense_tracker_screen.dart';
 import 'package:personal_tracker/presentation/views/expense_screen.dart';
 import 'package:personal_tracker/presentation/views/loading_screen.dart';
+import 'package:personal_tracker/presentation/views/password_change_screen.dart';
+import 'package:personal_tracker/presentation/views/password_code_screen.dart';
+import 'package:personal_tracker/presentation/views/password_reset_screen.dart';
 import 'package:personal_tracker/presentation/views/register_screen.dart';
 import 'package:personal_tracker/presentation/views/settings_screen.dart';
 import 'package:personal_tracker/presentation/views/sign_in_screen.dart';
@@ -14,9 +17,20 @@ final goRouterProvider = Provider<GoRouter>((ref) {
   final route = ref.watch(routeNotifierProvider);
 
   return GoRouter(
-    initialLocation:
-        '/dashboard', // Set the initial location to the login screen
+    initialLocation: '/logIn',
     routes: [
+      GoRoute(
+        path: '/change-password',
+        builder: (context, state) => PasswordChangeScreen(),
+      ),
+      GoRoute(
+        path: '/password-reset',
+        builder: (context, state) => PasswordResetScreen(),
+      ),
+      GoRoute(
+        path: '/password-code',
+        builder: (context, state) => PasswordCodeScreen(),
+      ),
       GoRoute(
         path: '/logIn',
         builder: (context, state) => LogInScreen(),
@@ -51,8 +65,14 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     debugLogDiagnostics: true,
     redirect: (context, state) {
       switch (route) {
+        case AppRoute.passwordChange:
+          return '/change-password';
         case AppRoute.verification:
           return '/verify';
+        case AppRoute.passwordcode:
+          return '/password-code';
+        case AppRoute.passwordReset:
+          return '/password-reset';
         case AppRoute.dashboard:
           return '/dashboard';
         case AppRoute.addExpense:

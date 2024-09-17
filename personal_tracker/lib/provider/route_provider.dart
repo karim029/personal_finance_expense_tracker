@@ -9,7 +9,10 @@ enum AppRoute {
   settings,
   register,
   logIn,
-  verification
+  verification,
+  passwordcode,
+  passwordReset,
+  passwordChange,
 }
 
 class RouteNotifier extends Notifier<AppRoute> {
