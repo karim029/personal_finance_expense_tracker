@@ -12,6 +12,7 @@ enum AppRoute {
   verification,
   passwordcode,
   passwordReset,
+  passwordChange,
 }
 
 class RouteNotifier extends Notifier<AppRoute> {

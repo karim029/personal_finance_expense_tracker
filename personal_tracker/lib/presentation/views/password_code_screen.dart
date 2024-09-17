@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:personal_tracker/provider/route_provider.dart';
 import 'package:personal_tracker/provider/sign_in_notifier.dart';
 
 class PasswordCodeScreen extends ConsumerWidget {
   PasswordCodeScreen({super.key});
   final List<TextEditingController> controllers =
       List.generate(4, (_) => TextEditingController());
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final signInNotifier = ref.read(signInNotifierProvider.notifier);
     final signInState = ref.watch(signInNotifierProvider);
+    final goRouteNotifier = ref.read(routeNotifierProvider.notifier);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Enter verification code'),
@@ -71,18 +75,40 @@ class PasswordCodeScreen extends ConsumerWidget {
             SizedBox(
               width: 100,
               child: ElevatedButton(
-                //! add functionality for verifying the code entered by the user.
-
-                onPressed: () {
+                onPressed: () async {
                   String verificationCode = controllers.map(
                     (controller) {
                       return controller.text;
                     },
                   ).join('');
 
-                  print('Verification Code: $verificationCode');
+                  // Call the verifyResetCode method
+                  bool success = await signInNotifier.verifyResetCode(
+                    signInState.email,
+                    verificationCode,
+                  );
+
+                  if (success) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Verification successful!'),
+                      ),
+                    );
+                    goRouteNotifier.goTo(AppRoute.passwordChange);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(signInState.errorMessage ??
+                            'Verification failed. Please try again.'),
+                      ),
+                    );
+                  }
                 },
-                child: const Text('Verify'),
+                child: signInState.isLoading
+                    ? const CircularProgressIndicator(
+                        color: Colors.white,
+                      )
+                    : const Text('Verify'),
               ),
             ),
 
@@ -91,9 +117,17 @@ class PasswordCodeScreen extends ConsumerWidget {
             // Resend Code Button
             TextButton(
               onPressed: () async {
-                signInNotifier.requestCode(signInState.email);
+                if (!signInState.isLoading) {
+                  await signInNotifier.requestCode(signInState.email);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(signInState.errorMessage ??
+                          'Verification code resent.'),
+                    ),
+                  );
+                }
               },
-              child: Text(
+              child: const Text(
                 'Resend Code',
               ),
             ),
