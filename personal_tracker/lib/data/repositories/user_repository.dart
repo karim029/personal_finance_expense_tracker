@@ -10,6 +10,7 @@ const registration = '${url}users/registration';
 const logIn = '${url}users/login';
 const verification = '${url}users/check-verification';
 const resendVerification = '${url}users/resend-verification';
+const requestResetCode = '${url}users/request-reset-code';
 
 class UserRepository {
   final http.Client _client;
@@ -100,6 +101,22 @@ class UserRepository {
     return verificationResponse(
         success: false,
         message: 'An error has occured. Please try again later');
+  }
+
+  Future<verificationResponse> requestPassResetCode(String email) async {
+    final response = await _client.post(
+      Uri.parse(requestResetCode),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'email': email,
+      }),
+    );
+    final body = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      return verificationResponse(success: true, message: body['message']);
+    } else {
+      return verificationResponse(success: false, message: body['message']);
+    }
   }
 }
 

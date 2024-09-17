@@ -10,14 +10,15 @@ enum AppRoute {
   register,
   logIn,
   verification,
-  passwordReset
+  passwordcode,
+  passwordReset,
 }
 
 class RouteNotifier extends Notifier<AppRoute> {
   // default location
   @override
   AppRoute build() {
-    return AppRoute.passwordReset; // set back to login after finishing the
+    return AppRoute.logIn;
   }
 
   // method to change state

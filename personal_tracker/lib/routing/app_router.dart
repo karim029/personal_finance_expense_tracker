@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:personal_tracker/presentation/views/expense_tracker_screen.dart';
 import 'package:personal_tracker/presentation/views/expense_screen.dart';
 import 'package:personal_tracker/presentation/views/loading_screen.dart';
+import 'package:personal_tracker/presentation/views/password_code_screen.dart';
 import 'package:personal_tracker/presentation/views/password_reset_screen.dart';
 import 'package:personal_tracker/presentation/views/register_screen.dart';
 import 'package:personal_tracker/presentation/views/settings_screen.dart';
@@ -15,12 +16,15 @@ final goRouterProvider = Provider<GoRouter>((ref) {
   final route = ref.watch(routeNotifierProvider);
 
   return GoRouter(
-    initialLocation:
-        '/password-reset', // Set the initial location to the password reset screen for testing
+    initialLocation: '/logIn',
     routes: [
       GoRoute(
         path: '/password-reset',
         builder: (context, state) => PasswordResetScreen(),
+      ),
+      GoRoute(
+        path: '/password-code',
+        builder: (context, state) => PasswordCodeScreen(),
       ),
       GoRoute(
         path: '/logIn',
@@ -58,6 +62,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       switch (route) {
         case AppRoute.verification:
           return '/verify';
+        case AppRoute.passwordcode:
+          return '/password-code';
         case AppRoute.passwordReset:
           return '/password-reset';
         case AppRoute.dashboard:
