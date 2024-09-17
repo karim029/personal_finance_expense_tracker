@@ -74,17 +74,19 @@ class SignInNotifier extends Notifier<SignInState> {
     }
   }
 
-  Future<void> requestCode() async {
+  Future<bool> requestCode(String email) async {
     try {
-      final response = await _userRepository.requestPassResetCode(state.email);
+      final response = await _userRepository.requestPassResetCode(email);
       if (response.success) {
         state.copyWith(
           errorMessage: response.message,
         );
+        return true;
       } else {
         state = state.copyWith(
-          errorMessage: response.message,
+          errorMessage: 'Email doesn\'t exist',
         );
+        return false;
       }
     } catch (e) {
       throw e;

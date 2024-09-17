@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:personal_tracker/provider/sign_in_notifier.dart';
 
 class PasswordCodeScreen extends ConsumerWidget {
   PasswordCodeScreen({super.key});
@@ -8,6 +9,8 @@ class PasswordCodeScreen extends ConsumerWidget {
       List.generate(4, (_) => TextEditingController());
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final signInNotifier = ref.read(signInNotifierProvider.notifier);
+    final signInState = ref.watch(signInNotifierProvider);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Enter verification code'),
@@ -85,8 +88,8 @@ class PasswordCodeScreen extends ConsumerWidget {
 
             // Resend Code Button
             TextButton(
-              onPressed: () {
-                // TODO: Add resend code logic here
+              onPressed: () async {
+                signInNotifier.requestCode(signInState.email);
               },
               child: Text(
                 'Resend Code',

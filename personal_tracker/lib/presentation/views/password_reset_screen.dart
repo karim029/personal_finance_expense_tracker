@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:personal_tracker/provider/route_provider.dart';
+import 'package:personal_tracker/provider/sign_in_notifier.dart';
 
 class PasswordResetScreen extends ConsumerWidget {
   PasswordResetScreen({super.key});
@@ -12,6 +13,8 @@ class PasswordResetScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final goRouteNotifier = ref.read(routeNotifierProvider.notifier);
+    final signInNotifier = ref.read(signInNotifierProvider.notifier);
+    final signInState = ref.watch(signInNotifierProvider);
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -74,28 +77,69 @@ class PasswordResetScreen extends ConsumerWidget {
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(120, 40),
                 ),
-                onPressed: () {
-                  // Validate the form before proceeding
+                onPressed: () async {
+                  // Validate the form
                   if (_formKey.currentState?.validate() ?? false) {
                     final email = _emailController.text;
+                    signInNotifier.updateEmail(email);
 
-                    // TODO: Add logic to send the reset code to the user's email
-                    print('Sending reset code to $email');
+                    try {
+                      // Make the backend call to check if the email exists
+                      final response = await signInNotifier.requestCode(email);
 
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'Reset code sent to $email',
-                          style:
-                              Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      if (response) {
+                        // Email exists, proceed with the reset code logic
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Reset code sent to $email',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .copyWith(
                                     fontWeight: FontWeight.normal,
                                     color: Theme.of(context)
                                         .colorScheme
                                         .inversePrimary,
                                   ),
+                            ),
+                          ),
+                        );
+                        goRouteNotifier.goTo(AppRoute.passwordcode);
+                      } else {
+                        // Email does not exist, show error
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              signInState.errorMessage!,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .copyWith(
+                                    fontWeight: FontWeight.normal,
+                                    color: Colors.red,
+                                  ),
+                            ),
+                          ),
+                        );
+                      }
+                    } catch (e) {
+                      // Handle any other errors
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'An error occurred. Please try again.',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .copyWith(
+                                  fontWeight: FontWeight.normal,
+                                  color: Colors.red,
+                                ),
+                          ),
                         ),
-                      ),
-                    );
+                      );
+                    }
                   }
                 },
                 child: const Text('Send Code'),
