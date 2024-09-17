@@ -119,7 +119,31 @@ class SignInNotifier extends Notifier<SignInState> {
     }
   }
 
-  changePassword(String newPassword) {}
+  Future<bool> changePassword(String newPassword) async {
+    try {
+      final response =
+          await _userRepository.resetPassword(state.email, newPassword);
+      if (response.success) {
+        state = state.copyWith(
+          isLoading: false,
+          errorMessage: null,
+        );
+        return true;
+      } else {
+        state = state.copyWith(
+          isLoading: false,
+          errorMessage: response.message,
+        );
+        return false;
+      }
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: 'An error occurred while resetting the password.',
+      );
+      return false;
+    }
+  }
 }
 
 class SignInState {

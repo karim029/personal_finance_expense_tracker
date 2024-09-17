@@ -12,6 +12,7 @@ const verificationUrl = '${url}users/check-verification';
 const resendVerificationUrl = '${url}users/resend-verification';
 const requestResetCodeUrl = '${url}users/request-reset-code';
 const verifyResetCodeUrl = '${url}users/verify-reset-code';
+const resetPasswordUrl = '${url}users/reset-password';
 
 class UserRepository {
   final http.Client _client;
@@ -83,7 +84,7 @@ class UserRepository {
     return body['isVerified'];
   }
 
-  Future<verificationResponse> resendVerificationEmail(String userId) async {
+  Future<VerificationResponse> resendVerificationEmail(String userId) async {
     final response = await _client.post(
       Uri.parse(resendVerificationUrl),
       headers: {'Content-Type': 'application/json'},
@@ -94,17 +95,17 @@ class UserRepository {
 
     final body = jsonDecode(response.body);
     if (response.statusCode == 400) {
-      return verificationResponse(success: false, message: body['message']);
+      return VerificationResponse(success: false, message: body['message']);
     }
     if (response.statusCode == 200) {
-      return verificationResponse(success: true, message: body['message']);
+      return VerificationResponse(success: true, message: body['message']);
     }
-    return verificationResponse(
+    return VerificationResponse(
         success: false,
         message: 'An error has occured. Please try again later');
   }
 
-  Future<verificationResponse> requestPassResetCode(String email) async {
+  Future<VerificationResponse> requestPassResetCode(String email) async {
     final response = await _client.post(
       Uri.parse(requestResetCodeUrl),
       headers: {'Content-Type': 'application/json'},
@@ -114,13 +115,13 @@ class UserRepository {
     );
     final body = jsonDecode(response.body);
     if (response.statusCode == 200) {
-      return verificationResponse(success: true, message: body['message']);
+      return VerificationResponse(success: true, message: body['message']);
     } else {
-      return verificationResponse(success: false, message: body['message']);
+      return VerificationResponse(success: false, message: body['message']);
     }
   }
 
-  Future<verificationResponse> verifyResetCode(
+  Future<VerificationResponse> verifyResetCode(
       String email, String resetCode) async {
     final response = await _client.post(
       Uri.parse(verifyResetCodeUrl),
@@ -133,18 +134,37 @@ class UserRepository {
     final body = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
-      return verificationResponse(success: true, message: body['message']);
+      return VerificationResponse(success: true, message: body['message']);
     } else {
-      return verificationResponse(success: false, message: body['message']);
+      return VerificationResponse(success: false, message: body['message']);
+    }
+  }
+
+  Future<VerificationResponse> resetPassword(
+      String email, String newPassword) async {
+    final response = await _client.post(
+      Uri.parse(resetPasswordUrl),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'email': email,
+        'newPassword': newPassword,
+      }),
+    );
+    final body = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      return VerificationResponse(success: true, message: body['message']);
+    } else {
+      return VerificationResponse(success: false, message: body['message']);
     }
   }
 }
 
-class verificationResponse {
+class VerificationResponse {
   final bool success;
   final String message;
 
-  verificationResponse({required this.success, required this.message});
+  VerificationResponse({required this.success, required this.message});
 }
 
 class SignInResponse {
