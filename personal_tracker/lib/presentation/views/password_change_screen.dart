@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:personal_tracker/provider/route_provider.dart';
 import 'package:personal_tracker/provider/sign_in_notifier.dart';
+import 'package:personal_tracker/routing/app_router.dart';
 
 class PasswordChangeScreen extends ConsumerWidget {
   const PasswordChangeScreen({super.key});
@@ -9,7 +11,7 @@ class PasswordChangeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final signInNotifier = ref.read(signInNotifierProvider.notifier);
     final signInState = ref.watch(signInNotifierProvider);
-
+    final goRouteProviderNotifer = ref.read(routeNotifierProvider.notifier);
     final _formKey = GlobalKey<FormState>();
     final _newPasswordController = TextEditingController();
     final _confirmPasswordController = TextEditingController();
@@ -124,7 +126,7 @@ class PasswordChangeScreen extends ConsumerWidget {
                           ),
                         ),
                       );
-                      Navigator.pop(context);
+                      goRouteProviderNotifer.goTo(AppRoute.logIn);
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
